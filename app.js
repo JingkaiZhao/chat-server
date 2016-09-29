@@ -2,12 +2,14 @@
 const koa = require('koa');
 const request = require('koa-request');
 const bodyParser = require('koa-bodyparser');
+const cors = require('kcors');
 
 let app = koa();
 
 require('koa-qs')(app);
 
 app.use(bodyParser());
+app.use(cors());
 
 let messages = {
     1: [{
@@ -40,6 +42,9 @@ app.use(function *(next) {
         responseBody = messages[client];
     } else if (requestUrl.indexOf('push_message') > -1) {
         try {
+            if (req.method !== 'POST' || req.method !== 'post') {
+                throw new Error(`http method ${req.method} is not allowed`);
+            }
             let message = req.body;
             let src = this.query.src;
             let target = this.query.target;
@@ -51,11 +56,10 @@ app.use(function *(next) {
             };
             responseBody = {status: 'success'};
         } catch (e) {
-            responseBody = {status: 'error'};
+            responseBody = {status: 'error', message: e};
         }
 
     }
-
 
     this.body = responseBody;
 });
