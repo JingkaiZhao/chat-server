@@ -42,7 +42,7 @@ app.use(function *(next) {
         responseBody = messages[client];
     } else if (requestUrl.indexOf('push_message') > -1) {
         try {
-            if (req.method !== 'POST' || req.method !== 'post') {
+            if (req.method !== 'POST' && req.method !== 'post') {
                 throw new Error(`http method ${req.method} is not allowed`);
             }
             let message = req.body;
@@ -56,6 +56,7 @@ app.use(function *(next) {
             };
             responseBody = {status: 'success'};
         } catch (e) {
+            console.log(e);
             responseBody = {status: 'error', message: e};
         }
 
